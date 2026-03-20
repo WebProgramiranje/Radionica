@@ -1,9 +1,10 @@
 package com.example.radionica
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
@@ -17,10 +18,12 @@ fun InputScreen(
     c: String, onCChange: (String) -> Unit,
     onCalculate: (Float, Float, Float) -> Unit
 ) {
+    var showDialog by remember { mutableStateOf(false) }
+
     Column(
-        modifier = Modifier.fillMaxSize().padding(24.dp),
+        modifier = Modifier.fillMaxSize().padding(24.dp, top = 96.dp, end = 24.dp, bottom = 96.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Top
     ) {
         Text("Površina trougla", style = MaterialTheme.typography.headlineLarge)
         Spacer(Modifier.height(16.dp))
@@ -37,11 +40,27 @@ fun InputScreen(
                 if (fA + fB > fC && fA + fC > fB && fB + fC > fA) {
                     onCalculate(fA, fB, fC)
                 }
+                else {
+                    showDialog = true
+                }
             },
             modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
         ) {
             Text("Izračunaj površinu", style = MaterialTheme.typography.titleLarge )
         }
+    }
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text("Greška") },
+            text = { Text("Unete stranice ne mogu da formiraju trougao.") },
+            confirmButton = {
+                TextButton(onClick = { showDialog = false }) {
+                    Text("U redu", style = MaterialTheme.typography.labelLarge)
+                }
+            }
+        )
     }
 }
 

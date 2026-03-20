@@ -1,0 +1,8 @@
+<resources>
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#1C1B1F</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="postSplashScreenTheme">@style/Theme.Radionica</item>
+    </style>
+    <style name="Theme.Radionica" parent="Theme.Material3.DayNight.NoActionBar" />
+</resources>

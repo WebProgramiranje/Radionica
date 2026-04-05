@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavType
@@ -36,9 +37,9 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Triangle() {
     val navController = rememberNavController()
-    var sideA by remember { mutableStateOf("") }
-    var sideB by remember { mutableStateOf("") }
-    var sideC by remember { mutableStateOf("") }
+    var sideA by rememberSaveable { mutableStateOf("") }
+    var sideB by rememberSaveable { mutableStateOf("") }
+    var sideC by rememberSaveable { mutableStateOf("") }
 
     NavHost(navController = navController, startDestination = "input") {
         composable("input") {

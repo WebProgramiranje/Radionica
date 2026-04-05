@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.*
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.text.font.FontWeight
 import kotlin.math.*
 
@@ -46,12 +47,13 @@ fun VisualizerScreen(a: Float, b: Float, c: Float, onBack: () -> Unit) {
         Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
             Canvas(modifier = Modifier.fillMaxSize()) {
                 val scale = minOf(size.width * 0.9f / sC, size.height * 0.9f / h)
+                if (!scale.isFinite() || scale <= 0f) return@Canvas
 
                 val trougaoScaledWidth = sC * scale
                 val trougaoScaledHeight = h * scale
 
                 val startX = (size.width - trougaoScaledWidth) / 2f
-                val startY = (size.height + trougaoScaledHeight) / 2f
+                val startY = (size.height + trougaoScaledHeight) / 2f - 80f // Zbog labele
 
                 val topX = startX + (xTop * scale)
                 val topY = startY - (h * scale)
@@ -66,15 +68,18 @@ fun VisualizerScreen(a: Float, b: Float, c: Float, onBack: () -> Unit) {
 
                 drawPath(path, color = accentColor, style = Stroke(width = 8f, join = StrokeJoin.Round))
 
-                val aPosition = Offset((rightX + topX) / 2f + 24f, (startY + topY) / 2f - 56f)
-                val bPosition = Offset((startX + topX) / 2f - 56f, (startY + topY) / 2f - 56f)
-                val cPosition = Offset(startX + (sC * scale) / 2f, startY + 40f)
+                val aPosition = checkBounds(Offset((rightX + topX) / 2f + 24f, (startY + topY) / 2f - 56f), size)
+                val bPosition = checkBounds(Offset((startX + topX) / 2f - 56f, (startY + topY) / 2f - 56f), size)
+                val cPosition = checkBounds(Offset(startX + (sC * scale) / 2f, startY + 40f), size)
 
                 val labelStyle = TextStyle(color = accentColor, fontSize = 16.sp, fontWeight = FontWeight.Bold)
 
-                drawText(textMeasurer = textMeasurer, text = aName, topLeft = aPosition, style = labelStyle)
-                drawText(textMeasurer = textMeasurer, text = bName, topLeft = bPosition, style = labelStyle)
-                drawText(textMeasurer = textMeasurer, text = cName, topLeft = cPosition, style = labelStyle)
+                if (aPosition != Offset(0f, 0f) && bPosition != Offset(0f, 0f) && cPosition != Offset(0f, 0f))
+                {
+                    drawText(textMeasurer = textMeasurer, text = aName, topLeft = aPosition, style = labelStyle)
+                    drawText(textMeasurer = textMeasurer, text = bName, topLeft = bPosition, style = labelStyle)
+                    drawText(textMeasurer = textMeasurer, text = cName, topLeft = cPosition, style = labelStyle)
+                }
             }
         }
 
@@ -97,6 +102,20 @@ fun VisualizerScreen(a: Float, b: Float, c: Float, onBack: () -> Unit) {
                 )
             }
         }
+    }
+}
+
+fun checkBounds(offset: Offset, size: Size) : Offset {
+    val margin = 16f
+    val cx = offset.x.coerceIn(margin, size.width - margin)
+    val cy = offset.y.coerceIn(margin, size.height - margin)
+    val position = Offset(cx, cy)
+    // Ensure the position won't cause negative maxWidth/Height
+    if (position.x < size.width && position.y < size.height) {
+        return position
+    }
+    else {
+        return Offset(0f, 0f)
     }
 }
 
